@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   TRIPLY — Sunset Travel Theme
+   ============================================ */
+
+@layer base {
+  :root {
+    /* Brand */
+    --triply-primary: #FF6B35;
+    --triply-secondary: #FDBA3B;
+    --triply-accent: #FF4D6D;
+    /* Surfaces */
+    --bg-canvas: #FFF8F2;
+    --bg-surface: #FFFFFF;
+    --bg-elevated: #FFFFFF;
+    /* Text */
+    --text-primary: #1F2937;
+    --text-secondary: #6B7280;
+    --text-tertiary: #9CA3AF;
+    /* Borders */
+    --border-default: #E5E7EB;
+    --border-subtle: #F3F4F6;
+    /* Semantic */
+    --success: #B45309;
+    --warning: #FDBA3B;
+    --danger: #DC2626;
+    /* Premium dark accent */
+    --premium-dark: #662508;
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  }
+
+  html {
+    @apply antialiased scroll-smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply font-sans;
+    color: var(--text-primary);
+    background-color: var(--bg-canvas);
+    line-height: 1.6;
+    letter-spacing: -0.011em;
+  }
+
+  /* Typography scale — premium hierarchy */
+  h1, .text-hero {
+    @apply font-bold tracking-tight;
+    letter-spacing: -0.025em;
+  }
+
+  h2, .text-section {
+    @apply font-semibold tracking-tight;
+    letter-spacing: -0.02em;
+  }
+
+  h3, .text-card-title {
+    @apply font-semibold;
+  }
+}
+
+/* ============================================
+   FORM INPUT SYSTEM
+   ============================================ */
+@layer components {
+  .input-base {
+    @apply w-full rounded-xl border border-[#E5E7EB] bg-white px-4 py-3 text-sm;
+    @apply placeholder:text-gray-400;
+    @apply transition-all duration-150;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500/25 focus:border-primary-500 focus:ring-offset-0;
+    @apply disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed;
+  }
+
+  .input-error {
+    @apply border-red-300 focus:ring-red-500/25 focus:border-red-500;
+  }
+
+  /* Premium select */
+  .select-base {
+    @apply input-base appearance-none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.25rem;
+    padding-right: 2.5rem;
+  }
+
+  /* Chip / tag — soft background */
+  .chip {
+    @apply inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-medium;
+    @apply bg-gray-100 text-gray-700 border border-gray-200/80;
+  }
+
+  .chip-primary {
+    @apply chip bg-primary-50 text-primary-700 border-primary-200/80;
+  }
+
+  /* Skeleton loader */
+  .skeleton {
+    @apply animate-pulse rounded-lg bg-gray-200;
+  }
+
+  .skeleton-shimmer {
+    @apply relative overflow-hidden rounded-lg bg-gray-200;
+  }
+
+  .skeleton-shimmer::after {
+    content: '';
+    @apply absolute inset-0 -translate-x-full;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%
+    );
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-shimmer {
+    100% { transform: translateX(100%); }
+  }
+
+  /* Container — consistent layout */
+  .container-main {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Section rhythm */
+  .section-spacing {
+    @apply py-8 md:py-12;
+  }
+
+  /* Safe area for fixed bottom nav (notched phones) */
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Focus ring for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:ring-offset-2;
+  }
+}

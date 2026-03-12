@@ -1,0 +1,39 @@
+.challenges-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.challenge-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(12, 74, 110, 0.06);
+  box-shadow: var(--shadow-soft);
+  transition: all 0.2s;
+}
+
+.challenge-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.challenge-card h3 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: var(--ocean-900);
+}
+
+.challenge-card p {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  color: var(--charcoal-muted);
+}
+
+.challenge-card .btn-primary {
+  margin-top: 1rem;
+  background: var(--ocean-700);
+  color: white;
+}

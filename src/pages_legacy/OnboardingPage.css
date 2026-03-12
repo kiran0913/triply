@@ -1,0 +1,33 @@
+.onboarding-page {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.onboarding-page h1 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+  color: var(--ocean-900);
+}
+
+.subtitle {
+  margin: 0 0 2rem;
+  color: var(--charcoal-muted);
+}
+
+.tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.btn-large {
+  padding: 0.9rem 2rem;
+  font-size: 1rem;
+  background: var(--ocean-700);
+  color: white;
+}

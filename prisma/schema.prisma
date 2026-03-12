@@ -1,0 +1,393 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  password     String?
+  name         String?
+  profilePhoto String?
+  bio          String?
+  location     String?
+  languages    Json?     // string[]
+  travelStyle  Json?     // string[]
+  budgetRange  String?
+  interests    Json?     // string[]
+  verified     Boolean   @default(false)
+  emailVerified DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Verification (traveler trust)
+  verificationLevel String?   // basic | verified | trusted
+  profileCompleted  Boolean   @default(false)
+  photoVerified     Boolean   @default(false)
+
+  // Safety & fraud (internal)
+  safetyScore    Int?      // 0-100
+  safetyStatus   String?   // low_risk | medium_risk | high_risk
+  flaggedReasons Json?     // string[]
+  fraudStatus    String?   @default("normal") // normal | suspicious | review_required | restricted
+
+  // Relations
+  hostedTrips    Trip[]       @relation("TripHost")
+  tripMemberships TripMember[]
+  matchesAsUser1 Match[]      @relation("MatchUser1")
+  matchesAsUser2 Match[]      @relation("MatchUser2")
+  sentMessages   Message[]
+  conversationsAsUser1 Conversation[] @relation("ConvUser1")
+  conversationsAsUser2 Conversation[] @relation("ConvUser2")
+  savedProfiles  SavedProfile[]       @relation("SavedByUser")
+  savedBy       SavedProfile[]        @relation("SavedProfileUser")
+  reportsMade   Report[]      @relation("Reporter")
+  reportsReceived Report[]    @relation("ReportedUser")
+  reviewsGiven  Review[]      @relation("Reviewer")
+  reviewsReceived Review[]    @relation("ReviewedUser")
+  notifications  Notification[] @relation("NotificationUser")
+  fraudEvents   FraudEvent[]
+  safetyFlags   SafetyFlag[]
+  emailVerificationTokens EmailVerificationToken[]
+  itineraryItemsAdded ItineraryItem[]   @relation("ItineraryAddedBy")
+  itineraryVotes      ItineraryItemVote[] @relation("ItineraryVotes")
+  itineraryComments   ItineraryItemComment[] @relation("ItineraryComments")
+  copilotMessages     TripCopilotMessage[]
+  storyLikes          StoryLike[]
+  storyComments       StoryComment[]
+  travelStories       TravelStory[]
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   // sha256 of token
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tokenHash])
+  @@index([expiresAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // message, trip_join, profile_saved
+  title     String
+  body      String?
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation("NotificationUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, read])
+}
+
+model Trip {
+  id          String   @id @default(cuid())
+  title       String
+  destination String
+  startDate   DateTime
+  endDate     DateTime
+  budget      String?
+  travelStyle String?
+  description String?
+  hostUserId  String
+  status      TripStatus @default(DRAFT)
+  slug        String?   @unique
+  isPublic    Boolean   @default(false)
+  shareImage  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  host             User                 @relation("TripHost", fields: [hostUserId], references: [id], onDelete: Cascade)
+  members          TripMember[]
+  reviews          Review[]
+  itineraryItems   ItineraryItem[]
+  copilotMessages  TripCopilotMessage[]
+  shares           TripShare[]
+  stories          TravelStory[]
+
+  @@index([slug])
+  @@index([isPublic, status])
+}
+
+model TravelStory {
+  id        String   @id @default(cuid())
+  tripId    String
+  authorId  String
+  title     String
+  content   String   @db.Text
+  photos    Json?    // string[] of image URLs
+  highlights Json?   // string[] e.g. ["Best ramen", "Favorite temple"]
+  createdAt DateTime @default(now())
+
+  trip     Trip          @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  author   User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes    StoryLike[]
+  comments StoryComment[]
+
+  @@index([tripId])
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+model StoryLike {
+  id      String @id @default(cuid())
+  storyId String
+  userId  String
+
+  story TravelStory @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([storyId, userId])
+  @@index([storyId])
+}
+
+model StoryComment {
+  id        String   @id @default(cuid())
+  storyId   String
+  userId    String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  story TravelStory @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  user  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([storyId])
+}
+
+model TripShare {
+  id         String   @id @default(cuid())
+  tripId     String
+  userId     String?
+  shareSource String  // copy_link | facebook | twitter | whatsapp | other
+  createdAt  DateTime @default(now())
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([tripId])
+  @@index([createdAt])
+}
+
+model TripCopilotMessage {
+  id        String   @id @default(cuid())
+  tripId    String
+  userId    String
+  message   String   @db.Text
+  role      String   // "user" | "assistant"
+  createdAt DateTime @default(now())
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tripId])
+  @@index([tripId, createdAt])
+}
+
+model ItineraryItem {
+  id           String    @id @default(cuid())
+  tripId       String
+  dayNumber    Int
+  title        String
+  description  String?
+  costEstimate String?
+  startTime    String?   // e.g. "09:00"
+  endTime      String?
+  position     Int       @default(0)
+  addedById    String
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  trip     Trip                @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  addedBy  User                @relation("ItineraryAddedBy", fields: [addedById], references: [id], onDelete: Cascade)
+  votes    ItineraryItemVote[]
+  comments ItineraryItemComment[]
+
+  @@index([tripId])
+  @@index([tripId, dayNumber])
+}
+
+model ItineraryItemVote {
+  id      String @id @default(cuid())
+  itemId  String
+  userId  String
+
+  item ItineraryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user User          @relation("ItineraryVotes", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, userId])
+  @@index([itemId])
+}
+
+model ItineraryItemComment {
+  id        String   @id @default(cuid())
+  itemId    String
+  userId    String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  item ItineraryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user User          @relation("ItineraryComments", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
+}
+
+enum TripStatus {
+  DRAFT
+  OPEN
+  CLOSED
+}
+
+model TripMember {
+  tripId String
+  userId String
+  role   TripMemberRole
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([tripId, userId])
+}
+
+enum TripMemberRole {
+  HOST
+  MEMBER
+}
+
+model Match {
+  id         String   @id @default(cuid())
+  user1Id    String
+  user2Id    String
+  matchScore Int?
+  createdAt  DateTime @default(now())
+
+  user1 User @relation("MatchUser1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2 User @relation("MatchUser2", fields: [user2Id], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id            String    @id @default(cuid())
+  user1Id       String
+  user2Id       String
+  lastMessageAt DateTime?
+  createdAt     DateTime  @default(now())
+
+  user1    User      @relation("ConvUser1", fields: [user1Id], references: [id], onDelete: Cascade)
+  user2    User      @relation("ConvUser2", fields: [user2Id], references: [id], onDelete: Cascade)
+  messages Message[]
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  read           Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
+
+model SavedProfile {
+  userId     String
+  savedUserId String
+
+  user      User @relation("SavedByUser", fields: [userId], references: [id], onDelete: Cascade)
+  savedUser User @relation("SavedProfileUser", fields: [savedUserId], references: [id], onDelete: Cascade)
+
+  @@id([userId, savedUserId])
+}
+
+model Report {
+  id           String   @id @default(cuid())
+  reporterId   String
+  reportedUserId String
+  reason       String?
+  createdAt    DateTime @default(now())
+
+  reporter     User @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  reportedUser User @relation("ReportedUser", fields: [reportedUserId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id            String   @id @default(cuid())
+  reviewerId    String
+  reviewedUserId String
+  rating        Int
+  comment       String?
+  tripId        String?
+  createdAt     DateTime @default(now())
+
+  reviewer    User  @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewedUser User @relation("ReviewedUser", fields: [reviewedUserId], references: [id], onDelete: Cascade)
+  trip        Trip? @relation(fields: [tripId], references: [id], onDelete: SetNull)
+}
+
+model FraudEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  eventType String   // excessive_messages | rapid_accounts | duplicate_content | join_leave_abuse | etc
+  reason    String?
+  metadata  Json?    // extra context
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model SafetyFlag {
+  id        String   @id @default(cuid())
+  userId    String?
+  targetType String  // user | trip | message
+  targetId  String?
+  reason    String
+  severity  String   // low | medium | high
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([targetType, targetId])
+}
+
+model AICache {
+  id          String   @id @default(cuid())
+  cacheKey    String
+  requestHash String   @unique
+  responseJSON String  @db.Text
+  endpoint    String   // trip-plan | recommend-trips
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  @@index([requestHash])
+  @@index([expiresAt])
+}
+
+model AIUsage {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String
+  tokensUsed Int
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([endpoint])
+  @@index([createdAt])
+}

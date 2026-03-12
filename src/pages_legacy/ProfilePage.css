@@ -1,0 +1,96 @@
+.profile-hero {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ocean-700), var(--ocean-500));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 auto 1rem;
+}
+
+.profile-hero h1 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  color: var(--ocean-900);
+}
+
+.profile-hero p {
+  margin: 0;
+  color: var(--charcoal-muted);
+  font-size: 0.95rem;
+}
+
+.profile-section {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(12, 74, 110, 0.06);
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 1.5rem;
+}
+
+.profile-section h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  margin: 0 0 1rem;
+  font-size: 1.2rem;
+  color: var(--ocean-900);
+}
+
+.points-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.points-value {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--ocean-700);
+  margin-right: 0.5rem;
+}
+
+.badge-pill {
+  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(6, 182, 212, 0.1);
+  color: var(--ocean-700);
+  border-radius: 999px;
+}
+
+.profile-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.link-card {
+  display: block;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius);
+  border: 1px solid rgba(12, 74, 110, 0.06);
+  box-shadow: var(--shadow-soft);
+  color: var(--ocean-900);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.link-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+  border-color: rgba(12, 74, 110, 0.1);
+}

@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Travel Buddy Finder",
+    "slug": "travel-buddy-finder",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.travelbuddyfinder.app"
+    },
+    "android": {
+      "package": "com.travelbuddyfinder.app"
+    }
+  }
+}

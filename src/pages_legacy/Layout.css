@@ -1,0 +1,77 @@
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-inner {
+  background: var(--sand);
+}
+
+.header-glass {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(12, 74, 110, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  font-size: 1.35rem;
+  color: var(--ocean-900);
+  letter-spacing: 0.04em;
+}
+
+.logo:hover {
+  color: var(--ocean-700);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.nav-link {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  color: var(--charcoal-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  color: var(--ocean-900);
+}
+
+.nav-link.active {
+  color: var(--ocean-700);
+  background: rgba(6, 182, 212, 0.08);
+}
+
+.user-badge {
+  font-size: 0.8rem;
+  color: var(--charcoal-muted);
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(12, 74, 110, 0.05);
+}
+
+.main {
+  flex: 1;
+  padding: 2.5rem 2rem;
+  max-width: 880px;
+  margin: 0 auto;
+  width: 100%;
+}
