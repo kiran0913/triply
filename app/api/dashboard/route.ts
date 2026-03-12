@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUserId } from "@/lib/auth-helpers";
 import { captureApiError } from "@/lib/sentry";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const userId = await getCurrentUserId(request);

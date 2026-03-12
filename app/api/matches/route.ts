@@ -5,6 +5,8 @@ import { aiMatchScore, ruleBasedMatchScore } from "@/lib/ai-match";
 
 const MAX_AI_SCORE_BATCH = 15; // Use AI for at most N users to avoid rate limits
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const userId = await getCurrentUserId(request);
